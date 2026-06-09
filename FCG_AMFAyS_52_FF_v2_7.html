@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FCG · FF AMFAyS 52 · Simulador</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ─── */
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* ── Base ─── */
+body{
+  font-family:'Barlow',sans-serif;
+  background:#f2f3f5;
+  color:#1a2456;
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;
+  line-height:1.55
+}
+
+/* ── Header — franja institucional ─── */
+header{
+  background:#1a2456;
+  border-bottom:3px solid #c8102e;
+  padding:0 32px;
+  display:flex;
+  align-items:stretch;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:100
+}
+.brand-block{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:10px 0;
+  border-right:1px solid rgba(255,255,255,.1);
+  padding-right:24px;
+  margin-right:0
+}
+.brand{
+  font-family:'EB Garamond',Georgia,serif;
+  font-size:22px;letter-spacing:5px;
+  color:#fff;font-weight:600;line-height:1
+}
+.sub{
+  font-size:7px;letter-spacing:6px;
+  color:rgba(255,255,255,.35);
+  display:block;margin-top:5px;
+  text-transform:uppercase;
+  font-family:'Barlow Condensed',sans-serif
+}
+/* strip de datos en el header */
+.hdr-stats{
+  display:flex;align-items:stretch;gap:0;
+  flex:1;
+  padding-left:0
+}
+.hdr-stat{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:0 20px;
+  border-right:1px solid rgba(255,255,255,.08);
+}
+.hdr-stat:last-child{border-right:none;margin-left:auto;text-align:right}
+.hdr-stat-l{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px;text-transform:uppercase;letter-spacing:1.5px;
+  color:rgba(255,255,255,.35);font-weight:600
+}
+.hdr-stat-v{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:14px;font-weight:600;
+  color:rgba(255,255,255,.85);
+  margin-top:2px;letter-spacing:.3px
+}
+
+/* ── Layout ─── */
+.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+
+/* ── Cards — sin bordes redondeados exagerados ─── */
+.card{
+  background:#fff;
+  border:1px solid #d8dbe8;
+  border-top:3px solid #1a2456;
+  border-radius:2px;
+  padding:20px 24px;
+  margin-bottom:14px
+}
+
+/* ── Título principal ─── */
+h1{
+  font-family:'EB Garamond',Georgia,serif;
+  font-size:22px;margin-bottom:6px;line-height:1.3;font-weight:600
+}
+.emisora{
+  font-size:12.5px;color:#5a5d6a;margin-bottom:12px;
+  font-family:'Barlow',sans-serif;
+  font-style:italic;line-height:1.5
+}
+
+/* ── Badges ─── */
+.badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.badge{
+  padding:3px 10px;
+  border-radius:1px;
+  font-size:10.5px;font-weight:600;
+  font-family:'Barlow Condensed',sans-serif;
+  letter-spacing:.5px;text-transform:uppercase
+}
+.bn{background:#fff;color:#3a4470;border:1px solid #b8bdd4}
+.bg{background:#fff;color:#3a4470;border:1px solid #b8bdd4}
+
+/* ── Header stats (debajo del título) ─── */
+.header-stats{
+  display:flex;gap:0;flex-wrap:wrap;
+  margin-bottom:14px;
+  border-top:1px solid #e8eaf0;
+  border-bottom:1px solid #e8eaf0;
+  padding:10px 0
+}
+.hs-item{
+  padding:0 24px;
+  border-right:1px solid #e8eaf0
+}
+.hs-item:first-child{padding-left:0}
+.hs-item:last-child{border-right:none}
+.hs-item .hs-lbl{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px;text-transform:uppercase;letter-spacing:1.5px;
+  color:#8a8d9e;font-weight:600
+}
+.hs-item .hs-val{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:19px;font-weight:700;
+  color:#1a2456;margin-top:2px;letter-spacing:.2px
+}
+.hs-item .hs-sub{font-size:10.5px;color:#8a8d9e;margin-top:1px;font-family:'Barlow',sans-serif}
+
+/* ── Details / accordion ─── */
+details summary{
+  cursor:pointer;font-size:12px;font-weight:600;
+  color:#1a2456;padding:5px 0;user-select:none;
+  font-family:'Barlow Condensed',sans-serif;
+  text-transform:uppercase;letter-spacing:.8px
+}
+.terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:12px}
+.terms-col{padding:0 14px}
+.terms-col:first-child{padding-left:0;border-right:1px solid #edeef4}
+.terms-col:last-child{padding-right:0}
+.term-row{
+  display:flex;justify-content:space-between;
+  padding:5px 0;border-bottom:1px solid #f0f1f5;
+  font-size:12px;gap:12px
+}
+.term-row:last-child{border-bottom:none}
+.tk{color:#8a8d9e;white-space:nowrap;font-family:'Barlow',sans-serif}
+.tv{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;text-align:right;color:#1a2456}
+.orgs-col{columns:2;gap:20px;margin-top:8px}
+.orgs-col li{font-size:11.5px;color:#5a5d6a;line-height:2.1;list-style:none;break-inside:avoid;font-family:'Barlow',sans-serif}
+
+/* ── Tabs ─── */
+.tab-bar{
+  display:flex;gap:0;margin-bottom:14px;
+  border-bottom:2px solid #d8dbe8
+}
+.tab{
+  padding:9px 22px;
+  font-size:11px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:#8a8d9e;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  margin-bottom:-2px;transition:all .12s;
+  font-family:'Barlow Condensed',sans-serif
+}
+.tab.active{color:#1a2456;border-bottom-color:#c8102e}
+.tab:hover:not(.active){color:#1a2456}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* ── Two-col layout ─── */
+.two-col{display:grid;grid-template-columns:300px 1fr;gap:14px;margin-bottom:14px}
+.panel{
+  background:#fff;
+  border:1px solid #d8dbe8;
+  border-left:3px solid #c8102e;
+  border-radius:2px;
+  padding:20px
+}
+
+/* ── Section titles ─── */
+.sec-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;text-transform:uppercase;letter-spacing:2px;
+  font-weight:700;color:#8a8d9e;
+  margin-bottom:14px;padding-bottom:6px;
+  border-bottom:1px solid #edeef4
+}
+
+/* ── Form inputs ─── */
+.input-group{margin-bottom:12px}
+.input-lbl{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8.5px;text-transform:uppercase;letter-spacing:1.5px;
+  color:#8a8d9e;font-weight:700;display:block;margin-bottom:5px
+}
+.main-input{
+  width:100%;padding:9px 12px;
+  border:1px solid #c8cad8;border-radius:2px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:22px;font-weight:700;
+  color:#1a2456;background:#f6f7fa;outline:none;transition:all .12s
+}
+.main-input:focus{border-color:#1a2456;background:#fff}
+.aux-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.aux-lbl{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8.5px;text-transform:uppercase;letter-spacing:1.2px;
+  color:#8a8d9e;font-weight:700;white-space:nowrap
+}
+.aux-input{
+  padding:7px 10px;
+  border:1px solid #c8cad8;border-radius:2px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:15px;font-weight:700;
+  color:#1a2456;background:#f6f7fa;outline:none;flex:1
+}
+
+/* ── Botón — más austero ─── */
+.calc-btn{
+  width:100%;padding:11px;
+  background:#c8102e;color:#fff;
+  border:none;border-radius:2px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;cursor:pointer;
+  transition:background .12s;margin-bottom:14px
+}
+.calc-btn:hover{background:#a50d25}
+.calc-btn:active{background:#1a2456}
+
+/* ── Resultados ─── */
+.res-grid{display:flex;gap:0;margin-bottom:0;border:1px solid #d8dbe8;margin-bottom:8px}
+.res-grid .rc{
+  flex:1;text-align:center;padding:10px 6px;
+  border-right:1px solid #d8dbe8
+}
+.res-grid .rc:last-child{border-right:none}
+.rc.spread{
+  background:#1a2456;width:100%;text-align:center;
+  margin-bottom:8px;padding:9px 14px;
+  border-radius:2px
+}
+.rc.spread .rl{color:rgba(255,255,255,.45)}
+.rc.spread .rv{color:#f0c040;font-size:20px}
+.rl{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:7.5px;text-transform:uppercase;letter-spacing:1.2px;
+  font-weight:700;color:#8a8d9e
+}
+.rc.spread .rl{color:rgba(255,255,255,.4)}
+.rv{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px;font-weight:700;
+  color:#1a2456;margin-top:2px
+}
+.rc.hl .rv{color:#fff;font-size:19px}
+.rv.dim{color:#c0c2cc;font-size:13px;font-weight:400}
+
+/* ── Info-row (duration etc) ─── */
+.info-row{display:flex;gap:0;margin-top:0;border:1px solid #d8dbe8;border-top:none}
+.ip{flex:1;padding:7px 8px;text-align:center;border-right:1px solid #d8dbe8}
+.ip:last-child{border-right:none}
+.il{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:7.5px;text-transform:uppercase;letter-spacing:1px;
+  color:#8a8d9e;font-weight:700
+}
+.iv{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:13px;font-weight:700;
+  color:#1a2456;margin-top:2px
+}
+.iv.dim{color:#c0c2cc;font-weight:400}
+
+/* ── Slot inversor ─── */
+.inv-slot{
+  background:#fff8ec;
+  border:1px solid #f0c040;
+  border-left:3px solid #c8102e;
+  border-radius:2px;
+  padding:10px 12px;
+  margin-bottom:12px
+}
+.inv-slot-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8.5px;text-transform:uppercase;letter-spacing:1.5px;
+  color:#8a6a00;font-weight:700;margin-bottom:8px;
+  display:flex;align-items:center;gap:6px
+}
+.inv-slot-title::before{content:'◈';color:#c8102e;font-size:11px}
+.inv-input-row{display:flex;align-items:center;gap:8px}
+.inv-prefix{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px;font-weight:700;
+  color:#1a2456;white-space:nowrap
+}
+.inv-input{
+  flex:1;padding:7px 10px;
+  border:1px solid #e0c050;border-radius:2px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px;font-weight:700;
+  color:#1a2456;background:#fffdf4;outline:none;
+  transition:all .12s
+}
+.inv-input:focus{border-color:#c8102e;background:#fff}
+.inv-factor{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;color:#8a6a00;margin-top:5px;
+  text-align:right;min-height:14px
+}
+.inv-factor strong{color:#c8102e}
+
+/* ── Tabla inversor: 3 subcolumnas ─── */
+th.inv-col{background:#c8102e!important;color:#fff!important;opacity:1!important}
+td.inv-col{font-weight:600!important}
+tr.tot td.inv-col{color:#c8102e!important}
+td.inv-cap{color:#5a7a3a!important}
+td.inv-int{color:#2e6da4!important}
+td.inv-tot{color:#c8102e!important;font-weight:700!important}
+th.inv-cap{opacity:.85!important}
+th.inv-int{opacity:.85!important}
+th.inv-tot{opacity:1!important;font-weight:800!important}
+
+/* ── Mensajes ─── */
+.warn-msg{
+  background:#fde8ec;color:#c8102e;
+  border-radius:2px;padding:7px 10px;
+  font-size:11px;margin-bottom:10px;
+  display:none;border-left:3px solid #c8102e;
+  font-family:'Barlow',sans-serif
+}
+.info-box{
+  padding:8px 10px;background:#f6f7fa;
+  border-radius:2px;
+  font-size:11px;color:#5a5d6a;line-height:1.6;
+  margin-bottom:12px;
+  border-left:3px solid #1a2456;
+  font-family:'Barlow',sans-serif
+}
+.info-box strong{color:#1a2456;font-family:'Barlow Condensed',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── Tabla de flujos ─── */
+.flow-wrap{overflow-x:auto}
+table{
+  width:100%;border-collapse:collapse;
+  font-family:'Barlow Condensed',sans-serif;font-size:12.5px
+}
+th{
+  background:#1a2456;color:rgba(255,255,255,.6);
+  padding:5px 8px;font-size:8.5px;
+  letter-spacing:.8px;text-transform:uppercase;
+  text-align:right;white-space:nowrap;font-weight:700
+}
+th:first-child{text-align:left}
+td{
+  padding:5px 8px;
+  border-bottom:1px solid #edeef4;
+  text-align:right;color:#1a2456;white-space:nowrap
+}
+td:first-child{text-align:left;color:#5a5d6a;font-size:11.5px}
+tr.tot td{
+  background:#eef0f7;font-weight:700;
+  border-bottom:2px solid #c8102e
+}
+tr.tot td:first-child{color:#1a2456}
+tr:not(.tot):hover td{background:#f6f7fa}
+.amt{color:#1a2456;font-weight:700}
+.tbl-hint{
+  font-size:10px;color:#aaadb8;margin-top:6px;
+  font-family:'Barlow',sans-serif;font-style:italic
+}
+
+/* ── KPIs ─── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1px;background:#d8dbe8;border:1px solid #d8dbe8}
+.kpi-card{background:#fff;padding:12px 14px}
+.kpi-l{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8.5px;text-transform:uppercase;letter-spacing:1.2px;
+  color:#8a8d9e;font-weight:700
+}
+.kpi-v{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:17px;font-weight:700;color:#1a2456;margin-top:3px
+}
+.kpi-sub{font-size:10px;color:#aab0c0;margin-top:2px;font-family:'Barlow',sans-serif}
+
+/* ── Tags de clase ─── */
+.clase-tag{
+  display:inline-block;padding:1px 7px;
+  border-radius:1px;font-size:10px;
+  font-weight:700;letter-spacing:.5px;
+  margin-right:4px;vertical-align:middle;
+  font-family:'Barlow Condensed',sans-serif;text-transform:uppercase
+}
+.tag-a{background:#1a2456;color:#fff}
+.tag-b{background:#2e3f8a;color:#fff}
+.tag-c{background:#4a5e9a;color:#fff}
+.tag-cp{background:#eef0f7;color:#63656a;border:1px solid #c8cde4}
+.clase-badge{
+  font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:1px;
+  background:#eef0f7;color:#1a2456;
+  border:1px solid #c8cde4;
+  font-family:'Barlow Condensed',sans-serif;text-transform:uppercase
+}
+
+/* ── Scatter ─── */
+.scatter-card{
+  background:#fff;border:1px solid #d8dbe8;
+  border-top:3px solid #1a2456;
+  border-radius:2px;padding:20px 24px;margin-bottom:14px
+}
+.legend-row{
+  display:flex;flex-wrap:wrap;gap:16px;
+  margin-top:10px;justify-content:center
+}
+.legend-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;color:#5a5d6a;
+  font-family:'Barlow Condensed',sans-serif
+}
+.scatter-hint{font-size:10px;color:#aab0c0;margin-top:8px;font-family:'Barlow',sans-serif;font-style:italic}
+
+/* ── Disclaimer ─── */
+.disclaimer{
+  background:#1a2456;
+  border-radius:2px;
+  border-left:4px solid #c8102e;
+  padding:14px 20px;
+  font-size:10px;color:rgba(255,255,255,.4);
+  line-height:1.8;margin-top:20px;
+  display:flex;gap:12px;
+  font-family:'Barlow',sans-serif
+}
+.disc-icon{color:#f0c040;font-size:14px;flex-shrink:0;margin-top:2px}
+
+@media(max-width:900px){
+  .two-col{grid-template-columns:1fr}
+  .terms-grid{grid-template-columns:1fr}
+  .terms-col{border-right:none!important;padding:0!important}
+  .orgs-col{columns:1}
+  .hdr-stats{display:none}
+  .header-stats{gap:16px}
+  .hs-item{border-right:none;padding:0}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand-block">
+    <div class="brand">FIRST</div>
+    <div class="sub">Capital &nbsp; Group</div>
+  </div>
+  <div class="hdr-stats">
+    <div class="hdr-stat">
+      <div class="hdr-stat-l">Instrumento</div>
+      <div class="hdr-stat-v">FF AMFAyS · Serie 52</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="hdr-stat-l">Licitación</div>
+      <div class="hdr-stat-v">19/05/2026</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="hdr-stat-l">Liquidación</div>
+      <div class="hdr-stat-v">03/06/2026</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="hdr-stat-l">Valor Fideicomitido</div>
+      <div class="hdr-stat-v">$ 2.940.092.565</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="hdr-stat-l">Organizador &amp; Colocador</div>
+      <div class="hdr-stat-v">First Capital Markets · CNV 532</div>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+
+<div class="card">
+  <h1>Fideicomiso Financiero "AMFAyS – Serie 52"</h1>
+  <div class="emisora">52° serie bajo el Programa Global de Valores Fiduciarios "Asociación Mutual AMFAyS" · Fiduciario: TMF Trust Company (Argentina) S.A. · Fiduciante: Asociación Mutual de las Fuerzas Armadas y de Seguridad</div>
+  <div class="badges">
+    <span class="badge bn">AAA.ar (sf) · VDF A · Moody's Local</span>
+    <span class="badge bg">AA.ar (sf) · VDF B</span>
+    <span class="badge bg">A+.ar (sf) · VDF C</span>
+    <span class="badge bg">B+.ar (sf) · CP</span>
+    <span class="badge bg">Préstamos personales · Código de descuento</span>
+    <span class="badge bg">Pagos mensuales · Turbo secuencial</span>
+  </div>
+  <div class="header-stats">
+    <div class="hs-item"><div class="hs-lbl">Valor Fideicomitido</div><div class="hs-val">$ 2.940.092.565</div><div class="hs-sub">Capital cedido: $ 2.121.185.517</div></div>
+    <div class="hs-item"><div class="hs-lbl">Licitación</div><div class="hs-val">19/05/2026</div><div class="hs-sub">10:00 – 16:00 hs · SIOPEL</div></div>
+    <div class="hs-item"><div class="hs-lbl">Liquidación</div><div class="hs-val">03/06/2026</div><div class="hs-sub">Fecha de corte: 16/05/2026</div></div>
+    <div class="hs-item"><div class="hs-lbl">Venc. final VDF</div><div class="hs-val">Jul. 2029</div><div class="hs-sub">1° pago servicios: 30/06/2026</div></div>
+    <div class="hs-item"><div class="hs-lbl">Créditos / Deudores</div><div class="hs-val">1.392 / 1.323</div><div class="hs-sub">Plazo rem. pond.: 28,5 cuotas</div></div>
+  </div>
+  <details>
+    <summary>Ver estructura de capital, términos completos y organizadores</summary>
+    <div style="margin-top:14px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#8a8d94;font-weight:600;margin-bottom:10px">Estructura de Capital</div>
+      <table style="margin-bottom:16px">
+        <thead><tr><th style="text-align:left">Clase</th><th>Calificación</th><th>V/N $</th><th>% VF</th><th>Cupón</th><th>Rango TNA</th><th>Duration</th><th>Sobrecol.</th><th>Venc.</th></tr></thead>
+        <tbody>
+          <tr><td><span class="clase-tag tag-a">A</span> Senior</td><td style="text-align:center">AAA.ar (sf)</td><td>1.909.066.965</td><td>64,93%</td><td>TAMAR + 100bps</td><td>25% – 45%</td><td>6,63 m</td><td>10,0%</td><td>Jul-29</td></tr>
+          <tr><td><span class="clase-tag tag-b">B</span> Subordinado</td><td style="text-align:center">AA.ar (sf)</td><td>63.635.566</td><td>2,16%</td><td>TAMAR + 100bps</td><td>26% – 46%</td><td>15,34 m</td><td>7,0%</td><td>Jul-29</td></tr>
+          <tr><td><span class="clase-tag tag-c">C</span> Subordinado</td><td style="text-align:center">A+.ar (sf)</td><td>148.482.986</td><td>5,05%</td><td>Fija 25% n.a.</td><td>25% (fija)</td><td>16,48 m</td><td>0,0%</td><td>Jul-29</td></tr>
+          <tr><td><span class="clase-tag tag-cp">CP</span> Residual</td><td style="text-align:center">B+.ar (sf)</td><td>818.907.048</td><td>27,85%</td><td>Remanente</td><td>—</td><td>—</td><td>—</td><td>May-29</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="terms-grid">
+      <div class="terms-col">
+        <div class="term-row"><span class="tk">Fiduciario / Emisor</span><span class="tv">TMF Trust Company (Argentina) S.A.</span></div>
+        <div class="term-row"><span class="tk">Fiduciante / Admin.</span><span class="tv">Asociación Mutual AMFAyS</span></div>
+        <div class="term-row"><span class="tk">Calificadora</span><span class="tv">Moody's Local AR · informe 21/05/2026</span></div>
+        <div class="term-row"><span class="tk">Moneda</span><span class="tv">Pesos argentinos ($)</span></div>
+        <div class="term-row"><span class="tk">Activo subyacente</span><span class="tv">Préstamos personales con cód. descuento</span></div>
+        <div class="term-row"><span class="tk">Tipo de cartera</span><span class="tv">Estática · turbo secuencial</span></div>
+        <div class="term-row"><span class="tk">Base cómputo</span><span class="tv">Días reales / 365</span></div>
+        <div class="term-row"><span class="tk">Período difusión</span><span class="tv">14/05/2026 – 18/05/2026</span></div>
+        <div class="term-row"><span class="tk">Sistema colocación</span><span class="tv">SIOPEL · A3 Mercados S.A.</span></div>
+      </div>
+      <div class="terms-col">
+        <div class="term-row"><span class="tk">V/N unitario</span><span class="tv">$ 1 (un peso)</span></div>
+        <div class="term-row"><span class="tk">Mínimo suscripción</span><span class="tv">$ 970.135 (UVA 500 · 13/05/2026)</span></div>
+        <div class="term-row"><span class="tk">Agente liquidación</span><span class="tv">Rosario Valores S.A.</span></div>
+        <div class="term-row"><span class="tk">Listado</span><span class="tv">BYMA / A3 Mercados S.A.</span></div>
+        <div class="term-row"><span class="tk">Fondo de reserva</span><span class="tv">$ 71.609.326 inicial · 1x próx. deveng.</span></div>
+        <div class="term-row"><span class="tk">Decreto SF 1014/26</span><span class="tv">Flujos re-evaluados · estructura ajustada</span></div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#8a8d94;font-weight:600;margin-bottom:8px">Organizadores y Colocadores</div>
+      <ul class="orgs-col">
+        <li>· First Capital Markets S.A. (Organizador y Colocador principal)</li>
+        <li>· BACS Banco de Crédito y Securitización S.A. (Organizador y Colocador)</li>
+        <li>· Adcap Securities Argentina S.A. (Colocador)</li>
+        <li>· GMC Valores S.A. (Colocador)</li>
+        <li>· Provincia Bursátil S.A. (Co-Colocador)</li>
+        <li>· Momentum Capital Investment S.A. (Co-Colocador y Asesor)</li>
+        <li>· First Corporate Finance Advisors S.A. (Asesor Financiero)</li>
+      </ul>
+    </div>
+  </details>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('vdfa')"><span class="clase-tag tag-a" style="font-size:9px;padding:1px 6px">A</span> VDF Clase A</div>
+  <div class="tab" onclick="switchTab('vdfb')"><span class="clase-tag tag-b" style="font-size:9px;padding:1px 6px">B</span> VDF Clase B</div>
+  <div class="tab" onclick="switchTab('vdfc')"><span class="clase-tag tag-c" style="font-size:9px;padding:1px 6px">C</span> VDF Clase C</div>
+</div>
+
+<!-- VDF A — licita PRECIO -->
+<div id="tab-vdfa" class="tab-content active">
+<div class="two-col">
+  <div class="panel">
+    <div class="sec-title">Simulación · VDF A <span class="clase-badge">AAA.ar (sf)</span></div>
+    <div class="info-box"><strong>VDF A licita por precio.</strong> Cupón variable TAMAR + 100bps (mín. 25% / máx. 45% n.a.). El rendimiento del inversor se determina por el precio de corte y la TAMAR proyectada.</div>
+    <div class="inv-slot">
+      <div class="inv-slot-title">V.N. a licitar</div>
+      <div class="inv-input-row">
+        <span class="inv-prefix">$</span>
+        <input type="number" id="a-vn-inv" class="inv-input" placeholder="10.000.000" min="0" step="1000000" onkeydown="if(event.key==='Enter')calcA()">
+      </div>
+      <div class="inv-factor" id="a-factor-lbl"></div>
+    </div>
+    <div class="input-group">
+      <label class="input-lbl" for="a-precio">Precio a licitar (% del VN)</label>
+      <input type="number" id="a-precio" class="main-input" value="100.00" step="0.01" min="80" max="120" onkeydown="if(event.key==='Enter')calcA()">
+    </div>
+    <div class="aux-row">
+      <span class="aux-lbl">TAMAR proyectada (% n.a.)</span>
+      <input type="number" id="a-tamar" class="aux-input" value="22.25" step="0.25" min="0" max="99" onkeydown="if(event.key==='Enter')calcA()">
+    </div>
+    <button class="calc-btn" onclick="calcA()">Calcular VDF A</button>
+    <div class="warn-msg" id="a-warn"></div>
+    <div class="res-grid">
+      <div class="rc">   <div class="rl">TIR (XIRR)</div><div class="rv dim" id="a-tir">—</div></div>
+      <div class="rc">   <div class="rl">TNA (30 días)</div><div class="rv dim" id="a-tna30">—</div></div>
+      <div class="rc">   <div class="rl">Tasa cupón proy.</div><div class="rv dim" id="a-cupon">—</div></div>
+    </div>
+    <div class="rc spread"><div class="rl">Spread implícito (TNA 30d − TAMAR)</div><div class="rv dim" id="a-spread-impl">—</div></div>
+    <div class="info-row">
+      <div class="ip"><div class="il">Duration</div><div class="iv dim" id="a-dur">—</div></div>
+      <div class="ip"><div class="il">Dur. Mod.</div><div class="iv dim" id="a-dm">—</div></div>
+      <div class="ip"><div class="il">VN total clase</div><div class="iv">$ 1.909.066.965</div></div>
+    </div>
+    <div style="margin-top:10px;padding:8px 10px;background:#f6f7fa;border-radius:2px;font-size:10px;border-left:3px solid #c8102e;color:#5a5d6a;line-height:1.6">
+      <strong style="color:#1a2456">VDF A:</strong> Mín. 25% · Máx. 45% n.a. · TAMAR + 100bps<br>
+      Amortización mensual secuencial · Duration: 6,63 meses<br>
+      Sobrecolateralización inicial: 10,0%
+    </div>
+  </div>
+  <div class="panel">
+    <div class="sec-title">Flujo de Fondos Proyectado · VDF A</div>
+    <div class="flow-wrap"><div id="a-flow"><p style="text-align:center;padding:50px 0;color:#c8cacc;font-size:12px">Ingresá el precio y presioná Calcular</p></div></div>
+  </div>
+</div>
+</div>
+
+<!-- VDF B — licita PRECIO -->
+<div id="tab-vdfb" class="tab-content">
+<div class="two-col">
+  <div class="panel">
+    <div class="sec-title">Simulación · VDF B <span class="clase-badge">AA.ar (sf)</span></div>
+    <div class="info-box"><strong>VDF B licita por precio.</strong> Cupón variable TAMAR + 100bps (mín. 26% / máx. 46% n.a.). Cobra tras cancelación íntegra del VDF A.</div>
+    <div class="inv-slot">
+      <div class="inv-slot-title">V.N. a licitar</div>
+      <div class="inv-input-row">
+        <span class="inv-prefix">$</span>
+        <input type="number" id="b-vn-inv" class="inv-input" placeholder="10.000.000" min="0" step="1000000" onkeydown="if(event.key==='Enter')calcB()">
+      </div>
+      <div class="inv-factor" id="b-factor-lbl"></div>
+    </div>
+    <div class="input-group">
+      <label class="input-lbl" for="b-precio">Precio a licitar (% del VN)</label>
+      <input type="number" id="b-precio" class="main-input" value="100.00" step="0.01" min="80" max="120" onkeydown="if(event.key==='Enter')calcB()">
+    </div>
+    <div class="aux-row">
+      <span class="aux-lbl">TAMAR proyectada (% n.a.)</span>
+      <input type="number" id="b-tamar" class="aux-input" value="22.25" step="0.25" min="0" max="99" onkeydown="if(event.key==='Enter')calcB()">
+    </div>
+    <button class="calc-btn" onclick="calcB()">Calcular VDF B</button>
+    <div class="warn-msg" id="b-warn"></div>
+    <div class="res-grid">
+      <div class="rc">   <div class="rl">TIR (XIRR)</div><div class="rv dim" id="b-tir">—</div></div>
+      <div class="rc">   <div class="rl">TNA (30 días)</div><div class="rv dim" id="b-tna30">—</div></div>
+      <div class="rc">   <div class="rl">Tasa cupón proy.</div><div class="rv dim" id="b-cupon">—</div></div>
+    </div>
+    <div class="rc spread"><div class="rl">Spread implícito (TNA 30d − TAMAR)</div><div class="rv dim" id="b-spread-impl">—</div></div>
+    <div class="info-row">
+      <div class="ip"><div class="il">Duration</div><div class="iv dim" id="b-dur">—</div></div>
+      <div class="ip"><div class="il">Dur. Mod.</div><div class="iv dim" id="b-dm">—</div></div>
+      <div class="ip"><div class="il">VN total clase</div><div class="iv">$ 63.635.566</div></div>
+    </div>
+    <div style="margin-top:10px;padding:8px 10px;background:#f6f7fa;border-radius:2px;font-size:10px;border-left:3px solid #c8102e;color:#5a5d6a;line-height:1.6">
+      <strong style="color:#1a2456">VDF B:</strong> Mín. 26% · Máx. 46% n.a. · TAMAR + 100bps<br>
+      Cobra tras cancelación íntegra del VDF A<br>
+      Duration: 15,34 meses · Sobrecolateralización: 7,0%
+    </div>
+  </div>
+  <div class="panel">
+    <div class="sec-title">Flujo de Fondos Proyectado · VDF B</div>
+    <div class="flow-wrap"><div id="b-flow"><p style="text-align:center;padding:50px 0;color:#c8cacc;font-size:12px">Ingresá el precio y presioná Calcular</p></div></div>
+  </div>
+</div>
+</div>
+
+<!-- VDF C — licita PRECIO, tasa fija -->
+<div id="tab-vdfc" class="tab-content">
+<div class="two-col">
+  <div class="panel">
+    <div class="sec-title">Simulación · VDF C <span class="clase-badge">A+.ar (sf)</span></div>
+    <div class="info-box"><strong>VDF C licita por precio.</strong> Tasa fija 25% n.a. Cobra tras cancelación de VDF A y VDF B.</div>
+    <div class="inv-slot">
+      <div class="inv-slot-title">V.N. a licitar</div>
+      <div class="inv-input-row">
+        <span class="inv-prefix">$</span>
+        <input type="number" id="c-vn-inv" class="inv-input" placeholder="10.000.000" min="0" step="1000000" onkeydown="if(event.key==='Enter')calcC()">
+      </div>
+      <div class="inv-factor" id="c-factor-lbl"></div>
+    </div>
+    <div class="input-group">
+      <label class="input-lbl" for="c-precio">Precio a licitar (% del VN)</label>
+      <input type="number" id="c-precio" class="main-input" value="100.00" step="0.01" min="80" max="120" onkeydown="if(event.key==='Enter')calcC()">
+    </div>
+    <div class="aux-row">
+      <span class="aux-lbl">TAMAR proyectada (% n.a.)</span>
+      <input type="number" id="c-tamar" class="aux-input" value="22.25" step="0.25" min="0" max="99" onkeydown="if(event.key==='Enter')calcC()">
+    </div>
+    <button class="calc-btn" onclick="calcC()">Calcular VDF C</button>
+    <div class="warn-msg" id="c-warn"></div>
+    <div class="res-grid">
+      <div class="rc">   <div class="rl">TIR (XIRR)</div><div class="rv dim" id="c-tir">—</div></div>
+      <div class="rc">   <div class="rl">TNA (30 días)</div><div class="rv dim" id="c-tna30">—</div></div>
+      <div class="rc">   <div class="rl">Tasa cupón (fija)</div><div class="rv dim" id="c-cupon">—</div></div>
+    </div>
+    <div class="rc spread"><div class="rl">Spread implícito (TNA 30d − TAMAR)</div><div class="rv dim" id="c-spread-impl">—</div></div>
+    <div class="info-row">
+      <div class="ip"><div class="il">Duration</div><div class="iv dim" id="c-dur">—</div></div>
+      <div class="ip"><div class="il">Dur. Mod.</div><div class="iv dim" id="c-dm">—</div></div>
+      <div class="ip"><div class="il">VN total clase</div><div class="iv">$ 148.482.986</div></div>
+    </div>
+    <div style="margin-top:10px;padding:8px 10px;background:#f6f7fa;border-radius:2px;font-size:10px;border-left:3px solid #c8102e;color:#5a5d6a;line-height:1.6">
+      <strong style="color:#1a2456">VDF C:</strong> Tasa fija 25% n.a. · Licitación por precio<br>
+      Cobra tras cancelación de VDF A y VDF B<br>
+      Duration: 16,48 meses · Sobrecolateralización: 0,0%
+    </div>
+  </div>
+  <div class="panel">
+    <div class="sec-title">Flujo de Fondos Proyectado · VDF C</div>
+    <div class="flow-wrap"><div id="c-flow"><p style="text-align:center;padding:50px 0;color:#c8cacc;font-size:12px">Ingresá el precio y presioná Calcular</p></div></div>
+  </div>
+</div>
+</div>
+
+<!-- KPIs CARTERA -->
+<div class="card">
+  <div class="sec-title">Características de la Cartera Cedida · AMFAyS Serie 52 &nbsp;·&nbsp; Fecha de corte 05/04/2026</div>
+  <div class="kpi-grid" id="kpi-grid"></div>
+</div>
+
+<!-- SCATTER -->
+<div class="scatter-card">
+  <div class="sec-title">Rendimientos en Mercado Secundario &nbsp;·&nbsp; TNA 30 días vs Duration (meses) &nbsp;·&nbsp; Datos al 29/05/2026</div>
+  <div style="position:relative">
+  <canvas id="scatter-canvas" style="width:100%;display:block;cursor:crosshair"></canvas>
+  <div id="scatter-tt" style="display:none;position:absolute;pointer-events:none;background:#fff;border:1px solid #dde0ea;border-radius:4px;padding:8px 12px;font-size:11px;font-family:'Barlow Condensed',sans-serif;color:#1a2456;min-width:160px;box-shadow:0 2px 8px rgba(0,0,0,.12);line-height:1.7;z-index:20"></div>
+  </div>
+  <div class="legend-row">
+    <div class="legend-item"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="rgba(138,154,176,0.5)" stroke="rgba(138,154,176,0.8)" stroke-width="0.8"/></svg>VDFA – Otros fideicomisos (93)</div>
+    <div class="legend-item"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="rgba(200,16,46,0.75)" stroke="#c8102e" stroke-width="1"/></svg>VDFA – AMFAyS series anteriores (48–51)</div>
+    <div class="legend-item"><svg width="12" height="12"><polygon points="6,1 11,11 1,11" fill="rgba(46,109,164,0.75)" stroke="#2e6da4" stroke-width="0.8"/></svg>Lecaps</div>
+    <div class="legend-item"><svg width="12" height="12"><rect x="1" y="1" width="10" height="10" fill="rgba(91,140,62,0.75)" stroke="#5b8c3e" stroke-width="0.8"/></svg>Duales TAMAR</div>
+    <div class="legend-item"><svg width="14" height="14"><polygon points="7,0 14,7 7,14 0,7" fill="#c8962a" stroke="#fff" stroke-width="1.5"/></svg>AMFAyS 52 – licitado</div>
+  </div>
+  <p class="scatter-hint" id="scatter-hint"></p>
+</div>
+
+<div class="disclaimer">
+  <div class="disc-icon">⚠</div>
+  <div>La presente calculadora debe ser considerada al sólo efecto ilustrativo y ejemplificativo. Los resultados no son vinculantes y pueden sufrir variaciones ante cambios en cualquiera de los supuestos. Los flujos de VDF A y VDF B se calculan a TAMAR proyectada ingresada; la tasa efectiva dependerá de la TAMAR publicada por el BCRA en cada período. VDF C a tasa fija 25% n.a. Distribución turbo secuencial según Suplemento de Prospecto y Adenda del 28/05/2026. <strong style="color:rgba(255,255,255,.6)">First Capital Markets S.A.</strong> · Organizador y Colocador · CNV N° 532.
+  </div>
+</div>
+</div>
+
+<script>
+const FECHAS_PAGO  = ["2026-06-30", "2026-07-15", "2026-08-17", "2026-09-15", "2026-10-15", "2026-11-16", "2026-12-15", "2027-01-15", "2027-02-15", "2027-03-15", "2027-04-15", "2027-05-17", "2027-06-15", "2027-07-15", "2027-08-16", "2027-09-15", "2027-10-15", "2027-11-15", "2027-12-15", "2028-01-17", "2028-02-15", "2028-03-15", "2028-04-17", "2028-05-15", "2028-06-15", "2028-07-17", "2028-08-15", "2028-09-15", "2028-10-16", "2028-11-15", "2028-12-15", "2029-01-15", "2029-02-15", "2029-03-15", "2029-04-16", "2029-05-15"];
+const DIAS_PERIODO = [30, 30, 33, 29, 30, 32, 29, 31, 31, 28, 31, 32, 29, 30, 32, 30, 30, 31, 30, 33, 29, 29, 33, 28, 31, 32, 29, 31, 31, 30, 30, 31, 31, 28, 32, 29];
+const FF_NETO      = [258976299.69, 133624011.2, 170856375.81, 152552083.68, 162066947.17, 152580001.92, 143662326.65, 137089916.84, 142337572.9, 130653182.76, 130945193.51, 114904995.82, 107982464.57, 133708726.88, 94093489.82, 117874562.92, 110388053.64, 102114959.46, 101758114.58, 96521790.15, 100743599.02, 99670237.94, 87720241.55, 76097358.22, 73900138.56, 73463244.7, 74055857.85, 73895238.53, 71439088.13, 67232908.01, 66707357.62, 61731001.73, 65606129.08, 65224625.61, 30976453.3, 362284.71];
+const FECHA_LIQ    = new Date("2026-06-03T00:00:00");
+const BASE = 365;
+const VN_A = 1909066965, MIN_A = 0.25, MAX_A = 0.45, SPREAD_A = 0.01;
+const VN_B =   63635566, MIN_B = 0.26, MAX_B = 0.46, SPREAD_B = 0.01;
+const VN_C =  148482986, TASA_C = 0.25;
+
+const MKT_VDFA_RESTO  = [{"codigo": "S245A", "dur_meses": 1.156, "tna_30d": 0.2535}, {"codigo": "S246A", "dur_meses": 2.247, "tna_30d": 0.2495}, {"codigo": "MS27A", "dur_meses": 2.337, "tna_30d": 0.2957}, {"codigo": "MS28A", "dur_meses": 4.54, "tna_30d": 0.2623}, {"codigo": "CF81A", "dur_meses": 0.742, "tna_30d": 0.2818}, {"codigo": "CF82A", "dur_meses": 1.265, "tna_30d": 0.3089}, {"codigo": "CF83A", "dur_meses": 2.515, "tna_30d": 0.2991}, {"codigo": "CF84A", "dur_meses": 2.277, "tna_30d": 0.3291}, {"codigo": "CF85A", "dur_meses": 4.204, "tna_30d": 0.2654}, {"codigo": "CF86A", "dur_meses": 4.827, "tna_30d": 0.2773}, {"codigo": "C196A", "dur_meses": 1.069, "tna_30d": 0.268}, {"codigo": "C197A", "dur_meses": 1.585, "tna_30d": 0.2694}, {"codigo": "C198A", "dur_meses": 1.923, "tna_30d": 0.2873}, {"codigo": "TE12A", "dur_meses": 0.851, "tna_30d": 0.446}, {"codigo": "TE13A", "dur_meses": 1.347, "tna_30d": 0.5226}, {"codigo": "TE14A", "dur_meses": 1.596, "tna_30d": 0.3051}, {"codigo": "TE15A", "dur_meses": 1.916, "tna_30d": 0.3082}, {"codigo": "TE16A", "dur_meses": 3.251, "tna_30d": 0.2774}, {"codigo": "FR27A", "dur_meses": 0.988, "tna_30d": 0.2937}, {"codigo": "FR28A", "dur_meses": 1.599, "tna_30d": 0.4369}, {"codigo": "FR29A", "dur_meses": 1.972, "tna_30d": 0.3982}, {"codigo": "FR30A", "dur_meses": 2.504, "tna_30d": 0.2899}, {"codigo": "FR31A", "dur_meses": 3.605, "tna_30d": 0.315}, {"codigo": "FR32A", "dur_meses": 4.41, "tna_30d": 0.294}, {"codigo": "FR33A", "dur_meses": 5.919, "tna_30d": 0.2742}, {"codigo": "M320A", "dur_meses": 1.304, "tna_30d": 0.3026}, {"codigo": "M322A", "dur_meses": 2.015, "tna_30d": 0.2972}, {"codigo": "M324A", "dur_meses": 2.178, "tna_30d": 0.3152}, {"codigo": "M326A", "dur_meses": 1.729, "tna_30d": 0.3156}, {"codigo": "M328A", "dur_meses": 2.134, "tna_30d": 0.3534}, {"codigo": "M330A", "dur_meses": 1.534, "tna_30d": 0.2762}, {"codigo": "M332A", "dur_meses": 2.135, "tna_30d": 0.2966}, {"codigo": "M334A", "dur_meses": 2.284, "tna_30d": 0.2914}, {"codigo": "M336A", "dur_meses": 3.018, "tna_30d": 0.3062}, {"codigo": "M338A", "dur_meses": 3.35, "tna_30d": 0.302}, {"codigo": "M340A", "dur_meses": 3.799, "tna_30d": 0.2857}, {"codigo": "M342A", "dur_meses": 3.973, "tna_30d": 0.2787}, {"codigo": "M344A", "dur_meses": 4.668, "tna_30d": 0.275}, {"codigo": "M323A", "dur_meses": 0.732, "tna_30d": 0.2803}, {"codigo": "M325A", "dur_meses": 1.12, "tna_30d": 0.2928}, {"codigo": "M327A", "dur_meses": 1.65, "tna_30d": 0.3046}, {"codigo": "M329A", "dur_meses": 1.993, "tna_30d": 0.2954}, {"codigo": "M331A", "dur_meses": 2.019, "tna_30d": 0.283}, {"codigo": "M333A", "dur_meses": 2.764, "tna_30d": 0.355}, {"codigo": "M335A", "dur_meses": 2.167, "tna_30d": 0.3278}, {"codigo": "M337A", "dur_meses": 2.852, "tna_30d": 0.3383}, {"codigo": "M339A", "dur_meses": 3.303, "tna_30d": 0.296}, {"codigo": "M341A", "dur_meses": 3.481, "tna_30d": 0.291}, {"codigo": "M343A", "dur_meses": 3.995, "tna_30d": 0.3047}, {"codigo": "M345A", "dur_meses": 4.504, "tna_30d": 0.3124}, {"codigo": "M347A", "dur_meses": 4.863, "tna_30d": 0.2758}, {"codigo": "M349A", "dur_meses": 5.719, "tna_30d": 0.2712}, {"codigo": "M351A", "dur_meses": 6.509, "tna_30d": 0.2703}, {"codigo": "DT36A", "dur_meses": 0.427, "tna_30d": 0.3091}, {"codigo": "DT38A", "dur_meses": 0.576, "tna_30d": 0.3229}, {"codigo": "DT39A", "dur_meses": 1.292, "tna_30d": 0.3388}, {"codigo": "DT40A", "dur_meses": 0.808, "tna_30d": 0.3623}, {"codigo": "DT41A", "dur_meses": 1.138, "tna_30d": 0.4001}, {"codigo": "DT42A", "dur_meses": 1.481, "tna_30d": 0.3018}, {"codigo": "DT43A", "dur_meses": 2.315, "tna_30d": 0.2935}, {"codigo": "DT44A", "dur_meses": 3.686, "tna_30d": 0.3104}, {"codigo": "DT45A", "dur_meses": 4.628, "tna_30d": 0.2865}, {"codigo": "DT46A", "dur_meses": 5.567, "tna_30d": 0.2827}, {"codigo": "DT47A", "dur_meses": 6.646, "tna_30d": 0.2761}, {"codigo": "DT48A", "dur_meses": 7.555, "tna_30d": 0.2757}, {"codigo": "DT49A", "dur_meses": 8.391, "tna_30d": 0.2755}, {"codigo": "LT16A", "dur_meses": 3.085, "tna_30d": 0.32}, {"codigo": "LT17A", "dur_meses": 5.363, "tna_30d": 0.3164}, {"codigo": "MM16A", "dur_meses": 1.642, "tna_30d": 0.59}, {"codigo": "MM17A", "dur_meses": 3.172, "tna_30d": 0.2817}, {"codigo": "TF25A", "dur_meses": 2.204, "tna_30d": 0.333}, {"codigo": "TF25A", "dur_meses": 2.204, "tna_30d": 0.333}, {"codigo": "WM11A", "dur_meses": 0.658, "tna_30d": 0.4532}, {"codigo": "WM12A", "dur_meses": 2.114, "tna_30d": 0.3178}, {"codigo": "WM13A", "dur_meses": 3.967, "tna_30d": 0.2704}, {"codigo": "PA14A", "dur_meses": 1.005, "tna_30d": 0.2633}, {"codigo": "PA15A", "dur_meses": 2.301, "tna_30d": 0.305}, {"codigo": "CU52A", "dur_meses": 0.592, "tna_30d": 0.271}, {"codigo": "CU53A", "dur_meses": 0.592, "tna_30d": 0.2764}, {"codigo": "CU54A", "dur_meses": 1.134, "tna_30d": 0.257}, {"codigo": "CU55A", "dur_meses": 1.067, "tna_30d": 0.2379}, {"codigo": "CU56A", "dur_meses": 1.697, "tna_30d": 0.2431}, {"codigo": "CU57A", "dur_meses": 3.007, "tna_30d": 0.243}, {"codigo": "WC07A", "dur_meses": 1.875, "tna_30d": 0.2568}, {"codigo": "TO07A", "dur_meses": 0.855, "tna_30d": 0.3001}, {"codigo": "TH03A", "dur_meses": 0.526, "tna_30d": 0.323}, {"codigo": "TH04A", "dur_meses": 0.888, "tna_30d": 0.4152}, {"codigo": "TH05A", "dur_meses": 2.888, "tna_30d": 0.3283}, {"codigo": "CO17A", "dur_meses": 4.04, "tna_30d": 0.2812}, {"codigo": "CO18A", "dur_meses": 3.735, "tna_30d": 0.2691}, {"codigo": "AY01A", "dur_meses": 3.746, "tna_30d": 0.2979}, {"codigo": "RV06A", "dur_meses": 3.89, "tna_30d": 0.1932}, {"codigo": "VF02A", "dur_meses": 4.781, "tna_30d": 0.2806}];
+const MKT_AMFAYS_PREV = [{"codigo": "MY48A", "dur_meses": 1.873, "tna_30d": 0.3718}, {"codigo": "MY49A", "dur_meses": 2.675, "tna_30d": 0.374}, {"codigo": "MY50A", "dur_meses": 2.653, "tna_30d": 0.3066}, {"codigo": "MY51A", "dur_meses": 4.726, "tna_30d": 0.2863}];
+const MKT_LECAPS      = [{"codigo": "S12J6", "dur_meses": 0.3, "tna_30d": 0.229}, {"codigo": "T30J6", "dur_meses": 0.9, "tna_30d": 0.215}, {"codigo": "S17L6", "dur_meses": 1.47, "tna_30d": 0.208}, {"codigo": "S31L6", "dur_meses": 1.93, "tna_30d": 0.1931}, {"codigo": "S14G6", "dur_meses": 2.4, "tna_30d": 0.2153}, {"codigo": "S31G6", "dur_meses": 2.97, "tna_30d": 0.2198}, {"codigo": "S15S6", "dur_meses": 3.47, "tna_30d": 0.2183}, {"codigo": "S30S6", "dur_meses": 3.97, "tna_30d": 0.2245}, {"codigo": "TO26", "dur_meses": 4.53, "tna_30d": 0.2157}, {"codigo": "S30O6", "dur_meses": 4.97, "tna_30d": 0.2232}, {"codigo": "S30N6", "dur_meses": 6.0, "tna_30d": 0.2191}, {"codigo": "T15E7", "dur_meses": 7.53, "tna_30d": 0.2316}, {"codigo": "T30A7", "dur_meses": 11.03, "tna_30d": 0.2381}, {"codigo": "T31Y7", "dur_meses": 12.07, "tna_30d": 0.2365}, {"codigo": "T30J7", "dur_meses": 13.07, "tna_30d": 0.2167}, {"codigo": "TY30P", "dur_meses": 32.23, "tna_30d": 0.2438}];
+const MKT_DUALES      = [{"codigo": "TTJ26", "dur_meses": 0.9, "tna_30d": 0.2248}, {"codigo": "M31G6", "dur_meses": 2.97, "tna_30d": 0.2132}, {"codigo": "TTS26", "dur_meses": 3.47, "tna_30d": 0.2221}, {"codigo": "TTD26", "dur_meses": 6.5, "tna_30d": 0.2192}, {"codigo": "TMF27", "dur_meses": 8.93, "tna_30d": 0.2132}, {"codigo": "TMG27", "dur_meses": 15.13, "tna_30d": 0.2586}, {"codigo": "TMF28", "dur_meses": 21.07, "tna_30d": 0.2856}, {"codigo": "TMG28", "dur_meses": 27.33, "tna_30d": 0.3009}, {"codigo": "TXMJ8", "dur_meses": 25.27, "tna_30d": 0.288}, {"codigo": "TXMJ9", "dur_meses": 37.4, "tna_30d": 0.3024}];
+
+// ── Distribución turbo secuencial ─────────────────────────────
+function distribuirFlujos(tamar) {
+  const tasaA = Math.max(MIN_A, Math.min(MAX_A, tamar + SPREAD_A));
+  const tasaB = Math.max(MIN_B, Math.min(MAX_B, tamar + SPREAD_B));
+  let saldoA = VN_A, saldoB = VN_B, saldoC = VN_C;
+  let intAcumB = 0, intAcumC = 0;
+  const rowsA = [], rowsB = [], rowsC = [];
+  for (let i = 0; i < FECHAS_PAGO.length; i++) {
+    const fp = new Date(FECHAS_PAGO[i]+"T00:00:00");
+    const fd = Math.round((fp - FECHA_LIQ)/86400000);
+    const dias = DIAS_PERIODO[i]; let resto = FF_NETO[i];
+    // VDF A
+    const intA=tasaA*saldoA*dias/BASE, amortA=Math.max(0,Math.min(saldoA,resto-intA)), pagoA=Math.min(intA+amortA,resto);
+    saldoA=Math.max(0,saldoA-amortA); resto=Math.max(0,resto-pagoA);
+    rowsA.push({fecha:FECHAS_PAGO[i],fd,dias,interes:Math.min(intA,pagoA),amort:amortA,total:pagoA,saldo:saldoA+amortA});
+    // VDF B — acumula interés mientras A tenga saldo, paga acumulado cuando A=0
+    const intB = tasaB*saldoB*dias/BASE;
+    let pagoB=0, amortB=0, intPagadoB=0;
+    if(saldoA<=0 && resto>0){
+      const totalIntB = intAcumB + intB;
+      amortB = Math.max(0, Math.min(saldoB, resto - totalIntB));
+      pagoB = Math.min(totalIntB + amortB, resto);
+      intPagadoB = Math.min(totalIntB, pagoB);
+      saldoB = Math.max(0, saldoB - amortB);
+      resto = Math.max(0, resto - pagoB);
+      intAcumB = 0;
+    } else {
+      intAcumB += intB;
+    }
+    rowsB.push({fecha:FECHAS_PAGO[i],fd,dias,interes:intPagadoB,amort:amortB,total:pagoB,saldo:saldoB+amortB});
+    // VDF C — igual, acumula mientras A o B tengan saldo
+    const intC = TASA_C*saldoC*dias/BASE;
+    let pagoC=0, amortC=0, intPagadoC=0;
+    if(saldoA<=0 && saldoB<=0 && resto>0){
+      const totalIntC = intAcumC + intC;
+      amortC = Math.max(0, Math.min(saldoC, resto - totalIntC));
+      pagoC = Math.min(totalIntC + amortC, resto);
+      intPagadoC = Math.min(totalIntC, pagoC);
+      saldoC = Math.max(0, saldoC - amortC);
+      intAcumC = 0;
+    } else {
+      intAcumC += intC;
+    }
+    rowsC.push({fecha:FECHAS_PAGO[i],fd,dias,interes:intPagadoC,amort:amortC,total:pagoC,saldo:saldoC+amortC});
+  }
+  return {rowsA,rowsB,rowsC};
+}
+
+function xirr(flows,dates){
+  const t0=dates[0];
+  function npv(r){let n=0;for(let j=0;j<flows.length;j++){const t=(dates[j]-t0)/86400000/BASE;n+=flows[j]/Math.pow(1+r,t);}return n;}
+  function dnpv(r){let d=0;for(let j=0;j<flows.length;j++){const t=(dates[j]-t0)/86400000/BASE;d-=t*flows[j]/Math.pow(1+r,t)/(1+r);}return d;}
+  // Probar múltiples semillas para garantizar convergencia
+  const seeds=[0.10,0.25,0.40,0.60,0.80,1.00,1.50,2.00];
+  let best=null, bestNpv=Infinity;
+  for(const seed of seeds){
+    let r=seed;
+    for(let i=0;i<500;i++){
+      const n=npv(r),dn=dnpv(r);
+      if(Math.abs(dn)<1e-20)break;
+      const dr=n/dn; r-=dr;
+      if(r<-0.999)r=seed*0.5; // evitar negativos extremos
+      if(Math.abs(dr)<1e-12)break;
+    }
+    const res=Math.abs(npv(r));
+    if(r>-0.999 && res<bestNpv){bestNpv=res;best=r;}
+  }
+  return best||0;
+}
+function macaulay(rows,tir){let w=0,wt=0;const r=Math.pow(1+tir,1/BASE)-1;for(const f of rows){if(f.total>0&&f.fd>0){const vp=f.total/Math.pow(1+r,f.fd);w+=vp;wt+=f.fd/BASE*vp;}}return w>0?wt/w:0;}
+function tna30(tir){return(Math.pow(1+tir,30/BASE)-1)*(BASE/30);}
+
+function calcClase(vn, precio, tamar, rows, warnId, ids) {
+  const wm=document.getElementById(warnId); wm.style.display='none';
+  const xF=[-precio*vn], xD=[FECHA_LIQ];
+  for(const r of rows) if(r.total>0){xF.push(r.total);xD.push(new Date(r.fecha+"T00:00:00"));}
+  const hasFlujo=rows.some(r=>r.total>0);
+  const tir=hasFlujo?xirr(xF,xD):0;
+  const dur=macaulay(rows,tir||0.25), dm=tir>0?dur/(1+tir):dur, t30=tir>0?tna30(tir):0;
+  return {tir,dur,dm,t30};
+}
+
+function fmtInv(n){
+  if(!n||n<=0)return '';
+  if(n>=1e9)return '$ '+(n/1e9).toFixed(3).replace('.',',').replace(/\.?0+$/,'')+' MM';
+  if(n>=1e6)return '$ '+(n/1e6).toFixed(3).replace('.',',').replace(/\.?0+$/,'')+' M';
+  return '$ '+Math.round(n).toLocaleString('es-AR');
+}
+function calcA(){
+  const pr=parseFloat(document.getElementById('a-precio').value);
+  const tm=parseFloat(document.getElementById('a-tamar').value);
+  const wm=document.getElementById('a-warn'); wm.style.display='none';
+  if(isNaN(pr)||isNaN(tm)){wm.textContent='Completá los campos.';wm.style.display='block';return;}
+  const precio=pr/100, tamar=tm/100;
+  const tasa=Math.max(MIN_A,Math.min(MAX_A,tamar+SPREAD_A));
+  const{rowsA}=distribuirFlujos(tamar);
+  const xF=[-precio*VN_A],xD=[FECHA_LIQ];
+  for(const r of rowsA)if(r.total>0){xF.push(r.total);xD.push(new Date(r.fecha+"T00:00:00"));}
+  const tir=xirr(xF,xD),dur=macaulay(rowsA,tir),dm=dur/(1+tir),t30=tna30(tir);
+  sv('a-tir',f2(tir*100)+'%');sv('a-cupon',f2(tasa*100)+'%');
+  sv('a-precio-res',f2(pr)+'% del VN');sv('a-tna30',f2(t30*100)+'%');
+  sv('a-dur',f2(dur)+' años');sv('a-dm',f2(dm)+' años');
+  sv('a-spread-impl', f2((t30 - tamar)*100) + '%');
+  const vnInv=parseFloat(document.getElementById('a-vn-inv').value);
+  const factor=(!isNaN(vnInv)&&vnInv>0)?vnInv/VN_A:null;
+  if(factor){
+    document.getElementById('a-factor-lbl').innerHTML=`Participación: <strong>${(factor*100).toFixed(4)}%</strong> &nbsp;·&nbsp; V.N.: <strong>${fmtInv(vnInv)}</strong>`;
+  } else {
+    document.getElementById('a-factor-lbl').innerHTML='';
+  }
+  renderFlow('a-flow',rowsA,tir,factor);
+  drawScatter(dur*12,t30*100,'A');
+}
+
+function calcB(){
+  const pr=parseFloat(document.getElementById('b-precio').value);
+  const tm=parseFloat(document.getElementById('b-tamar').value);
+  const wm=document.getElementById('b-warn'); wm.style.display='none';
+  if(isNaN(pr)||isNaN(tm)){wm.textContent='Completá los campos.';wm.style.display='block';return;}
+  const precio=pr/100, tamar=tm/100;
+  const tasa=Math.max(MIN_B,Math.min(MAX_B,tamar+SPREAD_B));
+  const{rowsB}=distribuirFlujos(tamar);
+  const xF=[-precio*VN_B],xD=[FECHA_LIQ];
+  for(const r of rowsB)if(r.total>0){xF.push(r.total);xD.push(new Date(r.fecha+"T00:00:00"));}
+  const hasFlujo=rowsB.some(r=>r.total>0);
+  const tir=hasFlujo?xirr(xF,xD):0,dur=macaulay(rowsB,tir||0.26),dm=tir>0?dur/(1+tir):dur,t30=tir>0?tna30(tir):tasa;
+  sv('b-tir',tir>0?f2(tir*100)+'%':'n/a');sv('b-cupon',f2(tasa*100)+'%');
+  sv('b-precio-res',f2(pr)+'% del VN');sv('b-tna30',tir>0?f2(t30*100)+'%':'n/a');
+  sv('b-dur',dur>0?f2(dur)+' años':'n/a');sv('b-dm',dm>0?f2(dm)+' años':'n/a');
+  sv('b-spread-impl', tir>0 ? f2((t30 - tamar)*100)+'%' : 'n/a');
+  const vnInv=parseFloat(document.getElementById('b-vn-inv').value);
+  const factor=(!isNaN(vnInv)&&vnInv>0)?vnInv/VN_B:null;
+  if(factor){
+    document.getElementById('b-factor-lbl').innerHTML=`Participación: <strong>${(factor*100).toFixed(4)}%</strong> &nbsp;·&nbsp; V.N.: <strong>${fmtInv(vnInv)}</strong>`;
+  } else {
+    document.getElementById('b-factor-lbl').innerHTML='';
+  }
+  renderFlow('b-flow',rowsB,tir||0,factor);
+  if(tir>0)drawScatter(dur*12,t30*100,'B');
+}
+
+function calcC(){
+  const pr=parseFloat(document.getElementById('c-precio').value);
+  const tm=parseFloat(document.getElementById('c-tamar').value);
+  const wm=document.getElementById('c-warn'); wm.style.display='none';
+  if(isNaN(pr)){wm.textContent='Ingresá un precio válido.';wm.style.display='block';return;}
+  const precio=pr/100, tamar=isNaN(tm)?0.2225:tm/100;
+  const{rowsC}=distribuirFlujos(tamar);
+  const xF=[-precio*VN_C],xD=[FECHA_LIQ];
+  for(const r of rowsC)if(r.total>0){xF.push(r.total);xD.push(new Date(r.fecha+"T00:00:00"));}
+  const hasFlujo=rowsC.some(r=>r.total>0);
+  const tir=hasFlujo?xirr(xF,xD):0,dur=macaulay(rowsC,tir||TASA_C),dm=tir>0?dur/(1+tir):dur,t30=tir>0?tna30(tir):TASA_C;
+  sv('c-tir',tir>0?f2(tir*100)+'%':'n/a');sv('c-cupon',f2(TASA_C*100)+'%');
+  sv('c-precio-res',f2(pr)+'% del VN');sv('c-tna30',t30>0?f2(t30*100)+'%':'n/a');
+  sv('c-dur',dur>0?f2(dur)+' años':'n/a');sv('c-dm',dm>0?f2(dm)+' años':'n/a');
+  sv('c-spread-impl', tir>0 ? f2((t30 - tamar)*100)+'%' : 'n/a');
+  const vnInv=parseFloat(document.getElementById('c-vn-inv').value);
+  const factor=(!isNaN(vnInv)&&vnInv>0)?vnInv/VN_C:null;
+  if(factor){
+    document.getElementById('c-factor-lbl').innerHTML=`Participación: <strong>${(factor*100).toFixed(4)}%</strong> &nbsp;·&nbsp; V.N.: <strong>${fmtInv(vnInv)}</strong>`;
+  } else {
+    document.getElementById('c-factor-lbl').innerHTML='';
+  }
+  renderFlow('c-flow',rowsC,tir||0,factor);
+  if(tir>0)drawScatter(dur*12,t30*100,'C');
+}
+
+function renderFlow(divId,rows,tir,factor){
+  let lastIdx=-1;
+  for(let i=rows.length-1;i>=0;i--)if(rows[i].total>0){lastIdx=i;break;}
+  if(lastIdx<0){document.getElementById(divId).innerHTML='<p style="text-align:center;padding:30px 0;color:#c8cacc;font-size:12px">Sin flujo para esta clase con los parámetros ingresados</p>';return;}
+  const vis=rows.slice(0,Math.min(rows.length-1,lastIdx+2)+1);
+  const hasInv = factor!=null && factor>0 && factor<=1;
+  let html='',tI=0,tA=0,tT=0,tInvA=0,tInvI=0,tInvT=0;
+  for(const f of vis){
+    tI+=f.interes;tA+=f.amort;tT+=f.total;
+    const aVal=f.amort>0?fI(f.amort):'—',aCls=f.amort>0?' class="amt"':'',dim=f.total<=0?' style="color:#c8cacc"':'';
+    let invCols='';
+    if(hasInv){
+      const iA=f.amort*factor, iI=f.interes*factor, iT=f.total*factor;
+      tInvA+=iA;tInvI+=iI;tInvT+=iT;
+      invCols=`<td class="inv-col inv-cap">${iA>0?fI(iA):'—'}</td><td class="inv-col inv-int">${iI>0?fI(iI):'—'}</td><td class="inv-col inv-tot">${iT>0?'<strong>'+fI(iT)+'</strong>':'—'}</td>`;
+    }
+    html+=`<tr><td>${fD(f.fecha)}</td><td${aCls}>${aVal}</td><td${dim}>${f.interes>0?fI(f.interes):'—'}</td><td${dim}><strong>${f.total>0?fI(f.total):'—'}</strong></td><td style="color:#8a8d94">${f.saldo>0?fI(f.saldo):'—'}</td>${invCols}</tr>`;
+  }
+  const invHead = hasInv
+    ? `<th class="inv-col inv-cap" colspan="1" style="border-left:2px solid rgba(255,255,255,.3)">Mi capital ($)</th><th class="inv-col inv-int">Mi interés ($)</th><th class="inv-col inv-tot">Mi cobro total ($)</th>`
+    : '';
+  const invFoot = hasInv
+    ? `<td class="inv-col inv-cap" style="border-left:2px solid #c8102e">${fI(tInvA)}</td><td class="inv-col inv-int">${fI(tInvI)}</td><td class="inv-col inv-tot"><strong>${fI(tInvT)}</strong></td>`
+    : '';
+  const hint = hasInv
+    ? `<p class="tbl-hint">Valores en $ enteros · Base días reales / 365 · Distribución turbo secuencial &nbsp;·&nbsp; <strong style="color:#c8102e">Mi cobro</strong> = flujo total × factor de participación (${(factor*100).toFixed(4)}%)</p>`
+    : `<p class="tbl-hint">Valores en $ enteros · Base días reales / 365 · Distribución turbo secuencial</p>`;
+  document.getElementById(divId).innerHTML=`<table><thead><tr><th style="text-align:left">Fecha pago</th><th>Amortización ($)</th><th>Interés ($)</th><th>Total ($)</th><th>Saldo capital ($)</th>${invHead}</tr></thead><tbody>${html}<tr class="tot"><td>TOTAL</td><td class="amt">${fI(tA)}</td><td>${fI(tI)}</td><td><strong>${fI(tT)}</strong></td><td>—</td>${invFoot}</tr></tbody></table>${hint}`;
+}
+
+// ── Scatter con 4 series ────────────────────────────────────
+let lastPt=null;
+let _scatterState=null;
+
+// Regresión logarítmica: y = a + b·ln(x)
+function logReg(pts){
+  const valid=pts.filter(p=>p.x>0);
+  const n=valid.length; if(n<2) return null;
+  const lx=valid.map(p=>Math.log(p.x));
+  const sx=lx.reduce((s,v)=>s+v,0);
+  const sy=valid.reduce((s,p)=>s+p.y,0);
+  const slxy=valid.reduce((s,p,i)=>s+lx[i]*p.y,0);
+  const slx2=lx.reduce((s,v)=>s+v*v,0);
+  const b=(n*slxy-sx*sy)/(n*slx2-sx*sx);
+  const a=(sy-b*sx)/n;
+  return {a,b};
+}
+
+function drawScatter(durM,tnaPct,lbl){
+  lastPt={durM,tnaPct,lbl};
+  const canvas=document.getElementById('scatter-canvas');
+  const W=canvas.parentElement.clientWidth-52, H=Math.round(W*0.40);
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  const pad={l:52,r:24,t:16,b:44}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+  const allPts=[...MKT_VDFA_RESTO,...MKT_AMFAYS_PREV,...MKT_LECAPS,...MKT_DUALES];
+  const allX=allPts.map(f=>f.dur_meses).concat([durM]);
+  const allY=allPts.map(f=>f.tna_30d*100).concat([tnaPct]);
+  const maxX=Math.min(Math.ceil(Math.max(...allX)*1.06),42);
+  const minY=Math.max(0,Math.floor(Math.min(...allY))-1), maxY=Math.ceil(Math.max(...allY))+2;
+
+  const tx=d=>pad.l+(d/maxX)*pw;
+  const ty=t=>pad.t+ph-((t-minY)/(maxY-minY))*ph;
+
+  _scatterState={pad,pw,ph,maxX,minY,maxY,W,H,durM,tnaPct,lbl};
+
+  // Fondo y grilla
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#f0f1f5';ctx.lineWidth=1;
+  const yStep=maxY-minY>25?10:5;
+  for(let g=Math.ceil(minY/yStep)*yStep;g<=maxY;g+=yStep){ctx.beginPath();ctx.moveTo(pad.l,ty(g));ctx.lineTo(pad.l+pw,ty(g));ctx.stroke();}
+  const xStep=maxX>30?5:maxX>15?2:1;
+  for(let g=0;g<=maxX;g+=xStep){ctx.beginPath();ctx.moveTo(tx(g),pad.t);ctx.lineTo(tx(g),pad.t+ph);ctx.stroke();}
+  ctx.strokeStyle='#dde0ea';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+ph);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+ph);ctx.lineTo(pad.l+pw,pad.t+ph);ctx.stroke();
+  ctx.fillStyle='#8a8d94';ctx.font='10px Barlow Condensed,sans-serif';ctx.textAlign='center';
+  for(let g=0;g<=maxX;g+=xStep)ctx.fillText(g+'m',tx(g),H-10);
+  ctx.textAlign='right';
+  for(let g=Math.ceil(minY/yStep)*yStep;g<=maxY;g+=yStep)ctx.fillText(g.toFixed(0)+'%',pad.l-6,ty(g)+4);
+
+  // ── Helper: dibujar curva de tendencia ──────────────────────
+  function drawTrend(data, color, dashLen=5, gapLen=3){
+    const pts=data.map(f=>({x:f.dur_meses,y:f.tna_30d*100})).filter(p=>p.x>0);
+    const reg=logReg(pts); if(!reg) return;
+    const xs=pts.map(p=>p.x);
+    const x0=Math.max(0.3, Math.min(...xs)-0.3);
+    const x1=Math.min(maxX, Math.max(...xs)+0.5);
+    const steps=120;
+    ctx.save();
+    ctx.setLineDash([dashLen,gapLen]);
+    ctx.strokeStyle=color; ctx.lineWidth=1.6; ctx.globalAlpha=0.65;
+    ctx.beginPath();
+    for(let i=0;i<=steps;i++){
+      const xv=x0+(x1-x0)*(i/steps);
+      const yv=reg.a+reg.b*Math.log(xv);
+      i===0 ? ctx.moveTo(tx(xv),ty(yv)) : ctx.lineTo(tx(xv),ty(yv));
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── Curvas primero (debajo de los puntos) ───────────────────
+  drawTrend(MKT_VDFA_RESTO,  'rgba(138,154,176,0.9)', 4, 3);
+  drawTrend(MKT_AMFAYS_PREV, '#c8102e',               6, 3);
+  drawTrend(MKT_LECAPS,      '#2e6da4',               6, 3);
+  drawTrend(MKT_DUALES,      '#5b8c3e',               6, 3);
+
+  // ── Puntos ──────────────────────────────────────────────────
+
+  // Serie 1: VDFA resto — solo puntos, sin tooltip
+  for(const f of MKT_VDFA_RESTO){
+    const x=tx(f.dur_meses),y=ty(f.tna_30d*100);
+    if(x<pad.l-2||x>pad.l+pw+2||y<pad.t-2||y>pad.t+ph+2)continue;
+    ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);
+    ctx.fillStyle='rgba(138,154,176,0.28)';ctx.fill();
+    ctx.strokeStyle='rgba(138,154,176,0.5)';ctx.lineWidth=0.6;ctx.stroke();
+  }
+  // Serie 2: AMFAyS series anteriores
+  for(const f of MKT_AMFAYS_PREV){
+    const x=tx(f.dur_meses),y=ty(f.tna_30d*100);
+    if(x<pad.l-2||x>pad.l+pw+2||y<pad.t-2||y>pad.t+ph+2)continue;
+    ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fillStyle='rgba(200,16,46,0.75)';ctx.fill();
+    ctx.strokeStyle='#c8102e';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle='#c8102e';ctx.font='bold 9px Barlow Condensed,sans-serif';ctx.textAlign='left';
+    ctx.fillText(f.codigo,x+8,y+3);
+  }
+  // Serie 3: Lecaps
+  for(const f of MKT_LECAPS){
+    const x=tx(f.dur_meses),y=ty(f.tna_30d*100);
+    if(x<pad.l-2||x>pad.l+pw+2||y<pad.t-2||y>pad.t+ph+2)continue;
+    ctx.beginPath();ctx.moveTo(x,y-5);ctx.lineTo(x+5,y+4);ctx.lineTo(x-5,y+4);ctx.closePath();
+    ctx.fillStyle='rgba(46,109,164,0.7)';ctx.fill();
+    ctx.strokeStyle='rgba(46,109,164,0.9)';ctx.lineWidth=0.8;ctx.stroke();
+  }
+  // Serie 4: Duales TAMAR
+  for(const f of MKT_DUALES){
+    const x=tx(f.dur_meses),y=ty(f.tna_30d*100);
+    if(x<pad.l-2||x>pad.l+pw+2||y<pad.t-2||y>pad.t+ph+2)continue;
+    ctx.beginPath();ctx.rect(x-4,y-4,8,8);
+    ctx.fillStyle='rgba(91,140,62,0.7)';ctx.fill();
+    ctx.strokeStyle='rgba(91,140,62,0.9)';ctx.lineWidth=0.8;ctx.stroke();
+  }
+
+  // Punto licitado AMFAyS 52
+  const x0=tx(durM),y0=ty(tnaPct);
+  ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(200,150,42,0.4)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,pad.t+ph);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(pad.l,y0);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(x0,y0-10);ctx.lineTo(x0+10,y0);ctx.lineTo(x0,y0+10);ctx.lineTo(x0-10,y0);ctx.closePath();
+  ctx.fillStyle='#c8962a';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  const lx=x0+14,ly=y0-8;
+  ctx.fillStyle='rgba(245,246,251,0.93)';
+  ctx.roundRect(lx-3,ly-13,140,30,4);ctx.fill();
+  ctx.strokeStyle='#dde0ea';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='#1a2456';ctx.font='bold 12px Barlow Condensed,sans-serif';ctx.textAlign='left';
+  ctx.fillText('AMFAyS 52 \u00b7 VDF '+lbl,lx,ly);
+  ctx.fillStyle='#8a8d94';ctx.font='10px Barlow Condensed,sans-serif';
+  ctx.fillText(durM.toFixed(2)+'m \u00b7 '+tnaPct.toFixed(1)+'% TNA',lx,ly+14);
+  ctx.fillStyle='#8a8d94';ctx.font='11px Barlow Condensed,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Duration (meses)',pad.l+pw/2,H-1);
+  ctx.save();ctx.translate(12,pad.t+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('TNA 30 d\u00edas (%)',0,0);ctx.restore();
+}
+
+// \u2500\u2500 Tooltip hover \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+(function(){
+  const SERIES=[
+    {data:()=>MKT_AMFAYS_PREV, label:'AMFAyS prev', color:'#c8102e',
+     tip:(f)=>`<strong style="font-size:13px">${f.codigo}</strong><div style="color:rgba(255,255,255,.5);font-size:10px;margin-bottom:2px">VDFA \u00b7 AMFAyS serie anterior</div><div>TNA 30d: <strong style="color:#f0c040">${(f.tna_30d*100).toFixed(2)}%</strong></div><div>Duration: <strong>${f.dur_meses.toFixed(2)} m</strong></div>`},
+    {data:()=>MKT_LECAPS,      label:'Lecap',  color:'#2e6da4',
+     tip:(f)=>`<strong style="font-size:13px">${f.codigo}</strong><div style="color:rgba(255,255,255,.5);font-size:10px;margin-bottom:2px">LECAP</div><div>TNA 30d: <strong style="color:#f0c040">${(f.tna_30d*100).toFixed(2)}%</strong></div><div>Duration: <strong>${f.dur_meses.toFixed(2)} m</strong></div>`},
+    {data:()=>MKT_DUALES,      label:'Dual',   color:'#5b8c3e',
+     tip:(f)=>`<strong style="font-size:13px">${f.codigo}</strong><div style="color:rgba(255,255,255,.5);font-size:10px;margin-bottom:2px">Dual TAMAR</div><div>TNA 30d: <strong style="color:#f0c040">${(f.tna_30d*100).toFixed(2)}%</strong></div><div>Duration: <strong>${f.dur_meses.toFixed(2)} m</strong></div>`},
+  ];
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    const canvas=document.getElementById('scatter-canvas');
+    const tt=document.getElementById('scatter-tt');
+
+    canvas.addEventListener('mousemove', ev=>{
+      if(!_scatterState) return;
+      const {pad,pw,ph,maxX,minY,maxY,W,durM,tnaPct,lbl}=_scatterState;
+      const rect=canvas.getBoundingClientRect();
+      const mx=ev.clientX-rect.left, my=ev.clientY-rect.top;
+
+      const tx=d=>pad.l+(d/maxX)*pw;
+      const ty=t=>pad.t+ph-((t-minY)/(maxY-minY))*ph;
+
+      const R=12;
+      let best=null, bestDist=R*R;
+
+      if(lastPt){
+        const dx=mx-tx(lastPt.durM), dy=my-ty(lastPt.tnaPct);
+        const d=dx*dx+dy*dy;
+        if(d<bestDist){
+          bestDist=d;
+          best={html:`<strong style="font-size:13px;color:#f0c040">AMFAyS 52 \u00b7 VDF ${lastPt.lbl}</strong><div style="color:rgba(255,255,255,.5);font-size:10px;margin-bottom:2px">Punto licitado</div><div>TNA 30d: <strong style="color:#f0c040">${lastPt.tnaPct.toFixed(2)}%</strong></div><div>Duration: <strong>${lastPt.durM.toFixed(2)} m</strong></div>`, borderColor:'#c8962a'};
+        }
+      }
+
+      for(const serie of SERIES){
+        for(const f of serie.data()){
+          const dx=mx-tx(f.dur_meses), dy=my-ty(f.tna_30d*100);
+          const d=dx*dx+dy*dy;
+          if(d<bestDist){bestDist=d;best={html:serie.tip(f),borderColor:serie.color};}
+        }
+      }
+
+      if(best){
+        tt.innerHTML=best.html;
+        tt.style.borderLeftColor=best.borderColor;
+        let lx=mx+14, ly=my-10;
+        if(lx+220>W) lx=mx-224;
+        if(ly<0) ly=4;
+        tt.style.left=lx+'px'; tt.style.top=ly+'px';
+        tt.style.display='block';
+        canvas.style.cursor='crosshair';
+      } else {
+        tt.style.display='none';
+        canvas.style.cursor='default';
+      }
+    });
+
+    canvas.addEventListener('mouseleave',()=>{
+      document.getElementById('scatter-tt').style.display='none';
+    });
+  });
+})();
+
+function switchTab(id){
+  ['vdfa','vdfb','vdfc'].forEach((t,i)=>{
+    document.querySelectorAll('.tab')[i].classList.toggle('active',t===id);
+    document.getElementById('tab-'+t).classList.toggle('active',t===id);
+  });
+}
+
+// ── KPIs de cartera cedida (sin datos del pasivo) ──────────────
+const KPIS=[
+  ["Capital cedido",      "$ 2.121.185.517",  "", "Saldo al 05/04/2026"],
+  ["Cantidad de créditos","1.392",             "", "1.323 deudores únicos"],
+  ["Crédito prom. vigente","$ 1.523.840",      "", "Crédito mayor: $ 9.925.701"],
+  ["Plazo orig. pond.",   "29,0 cuotas",       "", "Plazo remanente: 28,5 cuotas"],
+  ["Maduración promedio", "0,5 meses",         "", "Cartera prácticamente nueva"],
+  ["TNA prom. pond.",     "84,4%",             "", "Tasa fija en todos los préstamos"],
+  ["TIR de la cartera",   "63,78%",            "", "Tasa de descuento al VF"],
+  ["Mora > 90 días",      "0,1%",              "", "Serie 51: 0,0% · Serie 50: 6,7%"],
+  ["Cartera al día",      "99,9%",             "", "Al corte · dic-2025"],
+  ["APN (cód. descuento)","74,2%",             "", "Decreto PEN 14/2012"],
+  ["Otros códigos",       "25,8%",             "", "SF · CABA · Pcia. Bs As · Río Negro"],
+  ["Concentración top 10","4,2%",              "", "Top 100: 26,1% del capital"],
+  ["Operaciones/deudor",  "1,05x",             "", "Alta granularidad"],
+];
+document.getElementById('kpi-grid').innerHTML=KPIS.map(k=>`<div class="kpi-card"><div class="kpi-l">${k[0]}</div><div class="kpi-v ${k[2]}">${k[1]}</div>${k[3]?`<div class="kpi-sub">${k[3]}</div>`:''}</div>`).join('');
+
+function sv(id,v){const e=document.getElementById(id);if(e){e.textContent=v;e.classList.remove('dim');}}
+function f2(v){const s=v.toFixed(2),p=s.split('.');p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.');return p[0]+','+p[1];}
+function fI(v){return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function fD(s){const p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+
+window.addEventListener('resize',()=>{if(lastPt)drawScatter(lastPt.durM,lastPt.tnaPct,lastPt.lbl);});
+window.addEventListener('DOMContentLoaded',()=>{ calcA(); });
+</script>
+</body>
+</html>
